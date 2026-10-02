@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sorong Ekspedisi — Rahasia Pulau Doom</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-gold: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            max-height: 95vh;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            border: 1px solid #334155;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* OPENING SCREEN */
+        .title-screen {
+            padding: 40px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .title-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .title-screen h1 {
+            color: var(--text-light);
+            font-size: 2.2rem;
+            line-height: 1.25;
+            margin-bottom: 15px;
+        }
+
+        .title-screen h1 span {
+            color: var(--accent-gold);
+        }
+
+        .title-screen p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 540px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .game-stats-preview {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+
+        .stat-card .label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #0f172a;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+        }
+
+        /* GAMEPLAY SCREEN */
+        .game-screen {
+            display: none;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #0f172a;
+            padding: 12px 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .titik-tag {
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .score-tag {
+            background-color: #1e293b;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            border: 1px solid #334155;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #0f172a;
+            height: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-green));
+            width: 10%;
+            transition: width 0.3s ease;
+        }
+
+        .content-body {
+            padding: 20px;
+        }
+
+        .image-frame {
+            width: 100%;
+            height: 240px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #475569;
+            background-color: #020617;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+
+        .photo-card {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 18px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.16);
+            box-shadow: 0 12px 30px rgba(0,0,0,.18);
+        }
+        .photo-card img {
+            display: block;
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #dfe8e4;
+        }
+        .photo-caption {
+            padding: 10px 14px 12px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: rgba(255,255,255,.9);
+        }
+        .photo-caption small {
+            opacity: .72;
+        }
+
+        .image-frame svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .question-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .option-btn {
+            background-color: #0f172a;
+            color: var(--text-light);
+            border: 1px solid #334155;
+            padding: 12px 14px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-gold);
+            background-color: #1e293b;
+        }
+
+        .option-btn.correct {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            border-color: var(--accent-green) !important;
+            color: #6ee7b7 !important;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            border-color: var(--accent-red) !important;
+            color: #fca5a5 !important;
+        }
+
+        .explanation-box {
+            margin-top: 15px;
+            padding: 14px;
+            background-color: #0f172a;
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            display: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .explanation-box strong {
+            color: var(--accent-blue);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            padding: 15px 20px;
+            background-color: #0f172a;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+
+        /* TUTORIAL OVERLAY */
+        .tutorial-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
+            z-index: 99;
+            display: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .tutorial-box {
+            position: absolute;
+            bottom: 25px;
+            right: 20px;
+            left: 20px;
+            max-width: 440px;
+            margin: 0 auto;
+            background-color: #0f172a;
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        .tut-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tut-step-tag {
+            background-color: #10b981;
+            color: #0f172a;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .tut-skip-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .tut-title {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .tut-desc {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            background-color: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .tut-nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tut-btn-prev {
+            background-color: #1e293b;
+            color: var(--text-light);
+            border: 1px solid #334155;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tut-btn-next {
+            background-color: var(--accent-gold);
+            color: #0f172a;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* RESULT SCREEN */
+        .result-screen {
+            display: none;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .result-screen h2 {
+            color: var(--accent-gold);
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .score-badge {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            margin: 15px 0;
+        }
+
+        @media (max-width: 480px) {
+            .title-screen h1 { font-size: 1.6rem; }
+            .question-text { font-size: 0.88rem; }
+            .option-btn { font-size: 0.8rem; padding: 10px 12px; }
+            .image-frame { height: 180px; }
+            .tutorial-box { bottom: 15px; left: 15px; right: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+
+    <!-- 1. TITLE SCREEN -->
+    <div class="title-screen" id="titleScreen">
+        <div class="title-badge">MODUL EVALUASI SEJARAH • PULAU DOOM</div>
+        <h1>SORONG EKSPEDISI:<br><span>RAHASIA PULAU DOOM</span></h1>
+        <p>Petualangan menyusuri 10 pertanyaan sejarah Pulau Doom dan Sorong secara berurutan.</p>
+        
+        <div class="game-stats-preview">
+            <div class="stat-card">
+                <div class="number">10</div>
+                <div class="label">Pertanyaan</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">HOTS</div>
+                <div class="label">Soal Sejarah</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">100</div>
+                <div class="label">Skor Maksimal</div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="startGameWithTutorial()">MULAI PETUALANGAN</button>
+    </div>
+
+    <!-- 2. GAMEPLAY SCREEN -->
+    <div class="game-screen" id="gameScreen">
+        <div class="header">
+            <span class="titik-tag" id="titikTag">Titik 1/10</span>
+            <span class="score-tag" id="scoreTag">Skor: 0</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="content-body">
+            <div class="image-frame" id="svgContainer">
+                <!-- SVG Foto Arsip Klasik akan dimuat di sini -->
+            </div>
+
+            <div class="question-text" id="questionText">Memuat pertanyaan...</div>
+
+            <div class="options-grid" id="optionsGrid"></div>
+
+            <div class="explanation-box" id="explanationBox">
+                <strong>Analisis Kritis Sejarah:</strong>
+                <span id="explanationText"></span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="btn-primary" id="nextBtn" style="display:none; width:auto; padding: 12px 24px;" onclick="nextQuestion()">Titik Berikutnya &rarr;</button>
+        </div>
+    </div>
+
+    <!-- 3. TUTORIAL OVERLAY -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-box">
+            <div class="tut-top-row">
+                <span class="tut-step-tag" id="tutStepTag">Langkah 1 dari 3</span>
+                <button class="tut-skip-btn" onclick="closeTutorial()">⏭ Lewati</button>
+            </div>
+            <div class="tut-title" id="tutTitle">Langkah 1: Menyusuri Pertanyaan</div>
+            <div class="tut-desc" id="tutDesc">Game ini mengajakmu menganalisis 10 pos sejarah eksplorasi minyak Pulau Doom dari pedalaman Klamono hingga pesisir Sorong.</div>
+            <div class="tut-nav-row">
+                <button class="tut-btn-prev" id="tutBtnPrev" onclick="prevTutorialStep()">← Kembali</button>
+                <button class="tut-btn-next" id="tutBtnNext" onclick="nextTutorialStep()">Lanjut →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. RESULT SCREEN -->
+    <div class="result-screen" id="resultScreen">
+        <h2>Ekspedisi Selesai!</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Kamu telah menyelesaikan 10 pertanyaan sejarah Pulau Doom dan Sorong.</p>
+        <div class="score-badge" id="finalScore">0 / 100</div>
+        <p id="predikatText" style="font-weight: bold; margin-bottom: 25px; font-size: 1.1rem;"></p>
+        <button class="btn-primary" style="max-width: 100%;" onclick="restartGame()">Ulangi Dari Awal</button>
+    </div>
+
+</div>
+
+<script>
+    // VISUAL FOTO ARSIP REPUBLIK / KOLONIAL VINTAGE REALISTIS
+    const svgIllustrations = [
+        `<div class="photo-card"><img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Doom_Island_1955.jpg" alt="Pulau Doom dari udara, visual pendukung identitas dan bentuk pulau." loading="lazy"><div class="photo-caption">Pulau Doom dari udara, visual pendukung identitas dan bentuk pulau.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://i0.wp.com/remoteandafloat.com/wp-content/uploads/2018/08/sorong-pulau-doom.jpg?resize=780%2C585&ssl=1" alt="Vegetasi dan lingkungan Pulau Doom, sesuai pembahasan identitas alam pulau." loading="lazy"><div class="photo-caption">Vegetasi dan lingkungan Pulau Doom, sesuai pembahasan identitas alam pulau.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://picture.triptrus.com/image/2014/06/pulau-doom-1.jpeg" alt="Perairan Pulau Doom dan kawasan pesisir yang mendukung pembahasan pelabuhan alam." loading="lazy"><div class="photo-caption">Perairan Pulau Doom dan kawasan pesisir yang mendukung pembahasan pelabuhan alam.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://awsimages.detik.net.id/community/media/visual/2016/01/21/87aebde9-e373-46b7-a05b-c8d99cbd8f51_169.jpg?q=90&w=700" alt="Bangunan tua kolonial Pulau Doom, visual pendukung masa pemerintahan kolonial." loading="lazy"><div class="photo-caption">Bangunan tua kolonial Pulau Doom, visual pendukung masa pemerintahan kolonial.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://awsimages.detik.net.id/content/2013/10/08/1384/doom1.jpg" alt="Kawasan bangunan tua Pulau Doom, visual pendukung sejarah perkotaan kolonial." loading="lazy"><div class="photo-caption">Kawasan bangunan tua Pulau Doom, visual pendukung sejarah perkotaan kolonial.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Doom_Island_1955.jpg" alt="Foto udara historis Pulau Doom, cocok untuk membahas pola dan tata ruang." loading="lazy"><div class="photo-caption">Foto udara historis Pulau Doom, cocok untuk membahas pola dan tata ruang.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://awsimages.detik.net.id/community/media/visual/2016/01/21/87aebde9-e373-46b7-a05b-c8d99cbd8f51_169.jpg?q=90&w=700" alt="Arsitektur kolonial Pulau Doom, visual pendukung Indische Empire Style." loading="lazy"><div class="photo-caption">Arsitektur kolonial Pulau Doom, visual pendukung Indische Empire Style.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://picture.triptrus.com/image/2014/06/pulau-doom-1.jpeg" alt="Kawasan pesisir dan permukiman Pulau Doom, visual pendukung masyarakat pelabuhan." loading="lazy"><div class="photo-caption">Kawasan pesisir dan permukiman Pulau Doom, visual pendukung masyarakat pelabuhan.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://awsimages.detik.net.id/content/2013/10/08/1384/doom1.jpg" alt="Bangunan lama Pulau Doom, visual pendukung sejarah pendidikan dan pelayanan masyarakat." loading="lazy"><div class="photo-caption">Bangunan lama Pulau Doom, visual pendukung sejarah pendidikan dan pelayanan masyarakat.<br><small>Sumber: web</small></div></div>`,
+        `<div class="photo-card"><img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Doom_Island_1955.jpg" alt="Pulau Doom dari udara, visual pendukung pembahasan keterbatasan ruang dan sejarah pulau." loading="lazy"><div class="photo-caption">Pulau Doom dari udara, visual pendukung pembahasan keterbatasan ruang dan sejarah pulau.<br><small>Sumber: web</small></div></div>`
+    ];
+
+    const questionsData = [
+    {
+        "q": "Berdasarkan materi, dari manakah nama \"Doom\" berasal dan apa maknanya?",
+        "options": [
+            "Dari bahasa Belanda yang berarti pelabuhan utama",
+            "Dari bahasa Moi yang berarti tanah pemerintahan",
+            "Dari bahasa Maluku yang berarti pulau perdagangan",
+            "Dari kata Biak Numfor \"Düm\" yang bermakna pulau yang rindang, hijau, atau dipenuhi pepohonan buah-buahan"
+        ],
+        "correct": 3,
+        "explanation": "Materi menjelaskan bahwa nama Doom diserap dari perbendaharaan kata Suku Biak Numfor, yaitu Düm, yang bermakna pulau yang rindang, hijau, atau dipenuhi pepohonan buah-buahan."
+    },
+    {
+        "q": "Pohon apa yang secara khusus disebut sebagai bagian penting dari karakter alam Pulau Doom dalam materi?",
+        "options": [
+            "Pohon kelapa",
+            "Pohon sagu",
+            "Pohon sukun",
+            "Pohon pala"
+        ],
+        "correct": 2,
+        "explanation": "Materi menyebut Pulau Doom secara alamiah ditumbuhi pepohonan yang rimbun, terutama pohon sukun yang berbuah lebat sepanjang tahun."
+    },
+    {
+        "q": "Mengapa posisi Pulau Doom dianggap strategis untuk dijadikan pelabuhan alam (natural harbor)?",
+        "options": [
+            "Karena pulau tersebut berada jauh dari daratan utama",
+            "Karena seluruh wilayah pulau dikelilingi hutan lebat",
+            "Karena pulau tersebut menjadi pusat perdagangan antaretnis",
+            "Karena posisinya di dalam celah Teluk Sorong terlindung dari gelombang laut lepas dan badai Samudera Pasifik"
+        ],
+        "correct": 3,
+        "explanation": "Materi menjelaskan bahwa posisi Doom di dalam celah Teluk Sorong memberikan perlindungan alamiah dari gelombang laut lepas dan badai Samudera Pasifik, sementara perairan di sekitarnya ideal untuk pelabuhan alam."
+    },
+    {
+        "q": "Apa arti penetapan Pulau Doom sebagai Hoofdplaats Onderafdeeling Sorong pada tahun 1935?",
+        "options": [
+            "Doom ditetapkan sebagai pusat perdagangan antarpulau",
+            "Doom ditetapkan sebagai pusat kedudukan administratif pemerintahan wilayah Onderafdeeling Sorong",
+            "Doom dijadikan kawasan wisata sejarah pertama di Papua",
+            "Doom ditetapkan sebagai pusat perkebunan kolonial"
+        ],
+        "correct": 1,
+        "explanation": "Pada tahun 1935, Pulau Doom ditetapkan sebagai Hoofdplaats atau pusat kedudukan administratif pemerintahan untuk wilayah Onderafdeeling Sorong."
+    },
+    {
+        "q": "Apa yang menyebabkan Pulau Doom mendapat julukan \"De Ster van Papua\" atau \"Bintang Papua\"?",
+        "options": [
+            "Pulau Doom memiliki banyak bintang laut di perairannya",
+            "Pulau Doom telah memiliki pembangkit listrik diesel yang menyala 24 jam ketika daratan utama Sorong masih gelap pada malam hari",
+            "Pulau Doom merupakan tempat pertama ditemukannya minyak di Papua",
+            "Pulau Doom memiliki bangunan tertinggi di Papua"
+        ],
+        "correct": 1,
+        "explanation": "Materi menjelaskan bahwa pembangkit listrik diesel di Doom menyala 24 jam. Ketika daratan utama Sorong masih gelap pada malam hari, Doom tampak bercahaya di tengah lautan sehingga dijuluki De Ster van Papua."
+    },
+    {
+        "q": "Apa tujuan utama penerapan sistem pola kisi-kisi (grid pattern system) dalam tata ruang Pulau Doom?",
+        "options": [
+            "Mengatur kawasan secara teratur berdasarkan fungsi seperti administrasi, hunian, perdagangan, dan fasilitas umum",
+            "Memperluas wilayah Pulau Doom ke laut",
+            "Memusatkan seluruh penduduk di sekitar pelabuhan",
+            "Membuat seluruh bangunan memiliki bentuk yang sama"
+        ],
+        "correct": 0,
+        "explanation": "Pola grid digunakan dalam penataan ruang yang teratur dan presisi, dengan pembagian kawasan berdasarkan fungsi administrasi, hunian elite, perdagangan lokal, dan fasilitas umum."
+    },
+    {
+        "q": "Manakah yang paling tepat menggambarkan ciri arsitektur Indische Empire Style pada bangunan pemerintahan di Pulau Doom?",
+        "options": [
+            "Bangunan kayu sederhana tanpa pilar",
+            "Bangunan modern dengan kaca dan baja",
+            "Bangunan bergaya kolonial dengan karakteristik tropis, atap tinggi, dan pilar-pilar batu yang kokoh",
+            "Bangunan tradisional yang seluruhnya dibuat dari bambu"
+        ],
+        "correct": 2,
+        "explanation": "Materi menyebut kantor Bestuur berarsitektur Indische Empire Style yang menggabungkan karakteristik bangunan tropis beratap tinggi dengan pilar-pilar batu yang kokoh."
+    },
+    {
+        "q": "Mengapa Pulau Doom berkembang menjadi titik temu atau melting pot berbagai kelompok etnis?",
+        "options": [
+            "Karena seluruh kelompok etnis diwajibkan tinggal di Doom",
+            "Karena hanya satu kelompok etnis yang menguasai perdagangan",
+            "Karena pulau tersebut menjadi pusat olahraga dan hiburan",
+            "Karena kebutuhan logistik perkotaan dan aktivitas pelabuhan menarik berbagai kelompok pedagang dan pendatang"
+        ],
+        "correct": 3,
+        "explanation": "Aktivitas pelabuhan dan kebutuhan logistik perkotaan menarik berbagai kelompok, termasuk Tionghoa, Arab, Bugis, Buton, Maluku, dan Biak, yang hidup berdampingan dengan masyarakat Moi."
+    },
+    {
+        "q": "Apa peran utama Misi Zending dalam perkembangan masyarakat Pulau Doom?",
+        "options": [
+            "Menyebarkan agama Kristen dan mengembangkan pendidikan formal melalui sekolah, panti asuhan, serta fasilitas pelayanan kesehatan",
+            "Mengembangkan pertambangan minyak",
+            "Mengatur lalu lintas kapal dagang",
+            "Membangun benteng pertahanan Perang Dunia II"
+        ],
+        "correct": 0,
+        "explanation": "Materi menjelaskan bahwa Misi Zending menjadi markas penyebaran agama Kristen dan pendidikan formal. Di Doom juga didirikan sekolah, panti asuhan, serta fasilitas rumah sakit umum."
+    },
+    {
+        "q": "Mengapa pusat administrasi akhirnya dipindahkan dari Pulau Doom ke daratan Sorong, sementara Doom tetap dianggap penting secara sejarah?",
+        "options": [
+            "Karena Doom kehilangan seluruh bangunan kolonialnya",
+            "Karena keterbatasan ruang pulau mendorong relokasi, tetapi peninggalan sejarahnya tetap menjadikannya situs cagar budaya dan museum hidup",
+            "Karena pelabuhan Doom tidak pernah digunakan",
+            "Karena seluruh penduduk Doom pindah ke pulau lain"
+        ],
+        "correct": 1,
+        "explanation": "Materi menjelaskan bahwa keterbatasan ruang, pertumbuhan penduduk, kendaraan, kebutuhan gedung pemerintahan, dan ruang resapan menjadi kendala. Setelah relokasi, Doom tetap memiliki nilai sejarah sebagai museum hidup dan situs cagar budaya."
+    }
+];
+
+    let currentTutorialStep = 0;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const tutorialSteps = [
+        {
+            title: "Langkah 1: Menjelajah Sorong",
+            desc: "Kamu akan menjawab 10 pertanyaan tentang sejarah Pulau Doom dan perkembangan Sorong."
+        },
+        {
+            title: "Langkah 2: Menjawab Pertanyaan HOTS",
+            desc: "Pilih salah satu dari 4 opsi jawaban. Setiap jawaban tepat bernilai +10 poin."
+        },
+        {
+            title: "Langkah 3: Pembahasan Historis",
+            desc: "Setiap selesai menjawab, analisis kritis akan muncul untuk memperdalam wawasan Bab 2 kamu."
+        }
+    ];
+
+    function startGameWithTutorial() {
+        document.getElementById('titleScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'flex';
+        document.getElementById('tutorialOverlay').style.display = 'block';
+        loadQuestion();
+        updateTutorialOverlay();
+    }
+
+    function updateTutorialOverlay() {
+        const step = tutorialSteps[currentTutorialStep];
+        document.getElementById('tutStepTag').textContent = `Langkah ${currentTutorialStep + 1} dari 3`;
+        document.getElementById('tutTitle').textContent = step.title;
+        document.getElementById('tutDesc').textContent = step.desc;
+
+        document.getElementById('tutBtnPrev').style.visibility = (currentTutorialStep === 0) ? 'hidden' : 'visible';
+        
+        if (currentTutorialStep === tutorialSteps.length - 1) {
+            document.getElementById('tutBtnNext').textContent = "Mulai Bermain ✔";
+        } else {
+            document.getElementById('tutBtnNext').textContent = "Lanjut →";
+        }
+    }
+
+    function nextTutorialStep() {
+        if (currentTutorialStep < tutorialSteps.length - 1) {
+            currentTutorialStep++;
+            updateTutorialOverlay();
+        } else {
+            closeTutorial();
+        }
+    }
+
+    function prevTutorialStep() {
+        if (currentTutorialStep > 0) {
+            currentTutorialStep--;
+            updateTutorialOverlay();
+        }
+    }
+
+    function closeTutorial() {
+        document.getElementById('tutorialOverlay').style.display = 'none';
+    }
+
+    function loadQuestion() {
+        answered = false;
+        const q = questionsData[currentQuestionIndex];
+        
+        document.getElementById('progressBar').style.width = `${((currentQuestionIndex + 1) / questionsData.length) * 100}%`;
+        document.getElementById('titikTag').textContent = `${q.titik} (${currentQuestionIndex + 1}/10)`;
+        document.getElementById('scoreTag').textContent = `Skor: ${score}`;
+        
+        document.getElementById('svgContainer').innerHTML = svgIllustrations[currentQuestionIndex];
+        
+        document.getElementById('questionText').textContent = q.question;
+        
+        const optionsGrid = document.getElementById('optionsGrid');
+        optionsGrid.innerHTML = '';
+        q.options.forEach((optText, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = optText;
+            btn.onclick = () => selectOption(idx);
+            optionsGrid.appendChild(btn);
+        });
+
+        document.getElementById('explanationBox').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+    }
+
+    function selectOption(selectedIndex) {
+        if (answered) return;
+        answered = true;
+
+        const q = questionsData[currentQuestionIndex];
+        const buttons = document.getElementById('optionsGrid').children;
+
+        if (selectedIndex === q.correct) {
+            buttons[selectedIndex].classList.add('correct');
+            score += 10;
+            document.getElementById('scoreTag').textContent = `Skor: ${score}`;
+        } else {
+            buttons[selectedIndex].classList.add('wrong');
+            buttons[q.correct].classList.add('correct');
+        }
+
+        document.getElementById('explanationText').textContent = q.explanation;
+        document.getElementById('explanationBox').style.display = 'block';
+        document.getElementById('nextBtn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questionsData.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('gameScreen').style.display = 'none';
+        document.getElementById('resultScreen').style.display = 'block';
+
+        document.getElementById('finalScore').textContent = `${score} / 100`;
+
+        const predikat = document.getElementById('predikatText');
+        if (score >= 80) {
+            predikat.textContent = "Predikat: Sangat Baik (Master Geopolitik Minyak Papua)";
+            predikat.style.color = "#10b981";
+        } else if (score >= 60) {
+            predikat.textContent = "Predikat: Cukup (Analis Sejarah Kolonial)";
+            predikat.style.color = "#f59e0b";
+        } else {
+            predikat.textContent = "Predikat: Perlu Pendalaman Materi Bab 2";
+            predikat.style.color = "#ef4444";
+        }
+    }
+
+    function restartGame() {
+        currentQuestionIndex = 0;
+        score = 0;
+        currentTutorialStep = 0;
+        document.getElementById('resultScreen').style.display = 'none';
+        document.getElementById('titleScreen').style.display = 'flex';
+    }
+</script>
+
+</body>
+</html>
